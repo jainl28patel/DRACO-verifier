@@ -1,0 +1,6 @@
+klee-out-*/
+klee-last
+.vscode/
+*.ll
+*.bc
+paths.sh

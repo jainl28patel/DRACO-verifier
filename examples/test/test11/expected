@@ -1,0 +1,2 @@
+KLEE: done: read set = {b12, b13, map:blacklist_map.b0(sym)_b1(sym)_b2(1)_b3(1)_} 
+KLEE: done: write set = {map:blacklist_map.b0(sym)_b1(sym)_b2(1)_b3(1)_} 

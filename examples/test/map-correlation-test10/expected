@@ -1,0 +1,3 @@
+Map Correlations 
+xdp_fw_kern.c(47,10):bpf_map_lookup_elem(blacklist,b0(3)_b1(0)_b2(0)_b3(0)_)->xdp_fw_kern.c(51,15):bpf_map_lookup_elem(otherlist,b0(sym)_b1(sym)_b2(sym)_b3(sym)_)
+xdp_fw_kern.c(51,15):bpf_map_lookup_elem(otherlist,b0(sym)_b1(sym)_b2(sym)_b3(sym)_)->xdp_fw_kern.c(56,15):bpf_map_lookup_elem(finalList,b0(0)_b1(0)_b2(128)_b3(84)_b4(0)_b5(0)_b6(0)_b7(0)_)
