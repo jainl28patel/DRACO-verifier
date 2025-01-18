@@ -17,6 +17,7 @@ KLEE_RELEASE='v3.0'
 KLEE_UCLIBC_RELEASE='klee_uclibc_v1.3'
 LLVM_RELEASE=13
 Z3_RELEASE='z3-4.8.15'
+PATH_TO_BIN=
 
 ## Utility functions
 
@@ -178,7 +179,9 @@ clean_z3()
 
 bin_install_llvm()
 {
-	package_install clang-$LLVM_RELEASE llvm-$LLVM_RELEASE llvm-$LLVM_RELEASE-dev llvm-$LLVM_RELEASE-tools
+	# package_install clang-$LLVM_RELEASE llvm-$LLVM_RELEASE llvm-$LLVM_RELEASE-dev llvm-$LLVM_RELEASE-tools
+	PATH_TO_BIN=/usr/bin
+	echo "Installed"
 }
 
 clean_llvm()
@@ -201,8 +204,8 @@ source_install_klee_uclibc()
 
 	./configure \
 		--make-llvm-lib \
-		--with-llvm-config="/usr/bin/llvm-config-$LLVM_RELEASE" \
-		--with-cc="/usr/bin/clang-$LLVM_RELEASE"
+		--with-llvm-config="$PATH_TO_BIN/llvm-config" \
+		--with-cc="$PATH_TO_BIN/clang"
 
 	cp "$BUILDDIR/klee-uclibc.config" '.config'
 	make -j$(nproc)
@@ -229,9 +232,9 @@ source_install_klee_func_ver()
 								-DENABLE_UNIT_TESTS=OFF \
 								-DENABLE_SYSTEM_TESTS=OFF \
 								-DBUILD_SHARED_LIBS=OFF \
-								-DLLVM_CONFIG_BINARY="/usr/bin/llvm-config-$LLVM_RELEASE" \
-								-DLLVMCC="/usr/bin/clang-$LLVM_RELEASE" \
-								-DLLVMCXX="/usr/bin/clang++-$LLVM_RELEASE" \
+								-DLLVM_CONFIG_BINARY="$PATH_TO_BIN/llvm-config" \
+								-DLLVMCC="$PATH_TO_BIN/clang" \
+								-DLLVMCXX="$PATH_TO_BIN/clang++" \
 								-DENABLE_SOLVER_Z3=ON \
 								-DENABLE_KLEE_UCLIBC=ON \
 								-DKLEE_UCLIBC_PATH="$BUILDDIR/klee-uclibc" \
@@ -321,7 +324,6 @@ package_install \
 	curl \
 	git \
 	libgoogle-perftools-dev \
-	python2.7 \
 	python3-minimal \
 	python3-pip \
 	parallel \
