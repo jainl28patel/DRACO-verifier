@@ -202,7 +202,7 @@ verify-two-phase: $(XDP_C) Makefile $(KERN_USER_H) $(EXTRA_DEPS)
 	/usr/bin/time -v \
 		klee -kdalloc -kdalloc-heap-start-address=0x00040000000 -kdalloc-heap-size=1 -libc=uclibc --external-calls=all --disable-verify \
 		-solver-backend=z3 --exit-on-error -max-memory=750000 -search=dfs -single-object-resolution=true \
-		-verification=true -read-set=true -write-set=true -map-correlation=true -read-write-two-phase=true -map-access-control-file=/home/jainil/Draco/DRACO-verifier/examples/evaluation-two-program-fw-nat/mapConfig $(XDP_TARGETS).bc
+		-verification=true -read-set=true -write-set=true -map-correlation=true -read-write-two-phase=true $(XDP_TARGETS).bc
 
 verify-map-access: $(XDP_C) Makefile $(KERN_USER_H) $(EXTRA_DEPS)
 	$(CLANG) \

@@ -1,6 +1,6 @@
 [submodule "ebpf-se"]
 	path = ebpf-se
-	url = git@github.com:DRACO-verifier/ebpf-se.git
+	url = git@github.com:jainl28patel/ebpf-se.git
 [submodule "klee"]
 	path = klee
-	url = git@github.com:DRACO-verifier/klee.git
+	url = git@github.com:jainl28patel/klee.git
