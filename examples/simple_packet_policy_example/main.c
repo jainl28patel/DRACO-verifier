@@ -8,9 +8,9 @@
 #define USES_BPF_MAPS
 #endif
 
-#ifndef USES_BPF_MAP_LOOKUP_ELEM
-#define USES_BPF_MAP_LOOKUP_ELEM
-#endif
+// #ifndef USES_BPF_MAP_LOOKUP_ELEM
+// #define USES_BPF_MAP_LOOKUP_ELEM
+// #endif
 
 #ifndef USES_BPF_MAP_UPDATE_ELEM
 #define USES_BPF_MAP_UPDATE_ELEM
@@ -28,28 +28,7 @@ struct __attribute__((__packed__)) pkt {
   char payload[1500];
 };
 
-struct bpf_map_def SEC("maps") read_only = {
-	.type = BPF_MAP_TYPE_HASH,
-	.key_size = sizeof(int),
-	.value_size = sizeof(int),
-	.max_entries = 100,
-};
-
-struct bpf_map_def SEC("maps") write_only = {
-	.type = BPF_MAP_TYPE_HASH,
-	.key_size = sizeof(int),
-	.value_size = sizeof(int),
-	.max_entries = 100,
-};
-
 struct bpf_map_def SEC("maps") read_write = {
-	.type = BPF_MAP_TYPE_HASH,
-	.key_size = sizeof(int),
-	.value_size = sizeof(int),
-	.max_entries = 100,
-};
-
-struct bpf_map_def SEC("maps") no_access = {
 	.type = BPF_MAP_TYPE_HASH,
 	.key_size = sizeof(int),
 	.value_size = sizeof(int),
@@ -70,12 +49,12 @@ int xdp_main(struct xdp_md *ctx) {
 	eth = data;
 	nh_off = sizeof(*eth);
 	if (data  + nh_off  > data_end)
-		goto EOP;
+		return XDP_PASS;
 
 	ip = data + nh_off;
 	nh_off += sizeof(*ip);
 	if (data + nh_off  > data_end)
-		goto EOP;
+		return XDP_PASS;
 
 	if(ip->protocol != IPPROTO_TCP){
 		return XDP_PASS;
@@ -89,31 +68,22 @@ int xdp_main(struct xdp_md *ctx) {
 	// payload = data + nh_off;
 	nh_off += 3;
 	if (data + nh_off  > data_end)
-		goto EOP;
+		return XDP_PASS;
 
 	int key = 1;
 	int value = 42;
-	int *result;
 
 	// Valid map operations - read and write allowed
 	bpf_map_update_elem(&read_write, &key, &value, BPF_ANY);
-	result = bpf_map_lookup_elem(&read_write, &key);
 
-	// // // Invalid map operations - attempt write to read-only map
-	key = 2;
-	value = 100;
-	bpf_map_update_elem(&no_access, &key, &value, BPF_ANY); // This should fail verification
-	
-	// Valid map operations - read from read-only map
-	key = 1;
-	result = bpf_map_lookup_elem(&read_only, &key);
-	if (result && *result == 100) { // This should pass verification since read is allowed
-		return XDP_DROP;
-	}
+    // if(tcp->dest == htons(80)) {
+    //     return XDP_PASS;
+    // }
 
 	return XDP_PASS;
-	EOP:
-		return XDP_DROP;
+
+    EOP:
+        return XDP_DROP;
 }
 
 #ifdef KLEE_VERIFICATION
@@ -121,10 +91,7 @@ int xdp_main(struct xdp_md *ctx) {
 #include <stdlib.h>
 int main() {
 	// init maps
-	BPF_MAP_INIT(&read_only, "read_only", "", "");
 	BPF_MAP_INIT(&read_write, "read_write", "", "");
-	BPF_MAP_INIT(&no_access, "no_access", "", "");
-	BPF_MAP_INIT(&write_only, "write_only", "", "");
 
 	// init the ctx
 	struct pkt *pkt = malloc(sizeof(struct pkt));
